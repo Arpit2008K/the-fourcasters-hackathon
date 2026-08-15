@@ -26,42 +26,22 @@ def build_prompt(question, retrieved_chunks):
 
         context = context + chunk["text"] + "\n"
 
-        context = (
-            context
-            + "Source: "
-            + chunk["source"]
-            + "\n"
-        )
+        context = (context+ "Source: "+ chunk["source"]+ "\n")
 
-        context = (
-            context
-            + "Page Number: "
-            + str(chunk.get("page", "N/A"))
-            + "\n"
-        )
+        context = (context+ "Page Number: "+ str(chunk.get("page", "N/A"))+ "\n")
 
     prompt = """
-You are an AI research assistant.
-
-Use the provided research context to answer the user's query.
-
-If the answer is not available in the context, say:
-"There is not enough information to answer your query."
-
-Do not invent or assume information that is not present in the research context.
-
-When answering, mention the relevant source and page number from the research context when available.
-
-When information from multiple sources is relevant, combine the information and clearly identify the sources.
-
-If information from different sources conflicts, clearly state that the sources disagree and present the conflicting information without choosing one unless the context provides evidence to support a conclusion.
-
-If multiple research documents are provided, automatically compare the relevant documents and present the comparison in a clear table, even if the user does not explicitly ask for a comparison.
-
-Only include information supported by the research context in the comparison table, and do not fill missing information with assumptions.
-
-Research Context:
-"""
+        You are an AI research assistant.
+        Use the provided research context to answer the user's query.
+        If the answer is not available in the context, say:
+        "There is not enough information to answer your query."
+        Do not invent or assume information that is not present in the research context.
+        When answering, mention the relevant source and page number from the research context when available.
+        When information from multiple sources is relevant, combine the information and clearly identify the sources.
+        If information from different sources conflicts, clearly state that the sources disagree and present the conflicting information without choosing one unless the context provides evidence to support a conclusion.
+        If multiple research documents are provided, automatically compare the relevant documents and present the comparison in a clear table, even if the user does not explicitly ask for a comparison.
+        Only include information supported by the research context in the comparison table, and do not fill missing information with assumptions.
+        Research Context: """
 
     prompt = prompt + context
 
