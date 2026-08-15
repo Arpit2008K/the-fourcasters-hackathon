@@ -28,9 +28,12 @@ def build_prompt(question, retrieved_chunks):
     return prompt
 
 def get_answer(question,retrieved_chunks):
-    prompt = build_prompt(question, retrieved_chunks)
-    response=model.invoke(prompt)
-    return response.content
+    try:
+        prompt = build_prompt(question, retrieved_chunks)
+        response=model.invoke(prompt)
+        return response.content
+    except Exception as e:
+        return "Sorry, I was unable to give you an answer.Please try again."
 
 test_chunks = [
     {
