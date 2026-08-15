@@ -331,7 +331,7 @@ def process_txt(file_path):       # Function to process a TXT file
     return processed_chunks
 
 
-#-----------------------------------------------------PPTX Processing Functions
+#-----------------------------------------------------PPTX Processing Functions------------------------------------------------------_#
 
 
 # Function to process the complete PPTX file
@@ -494,3 +494,6 @@ if __name__ == "__main__":
 
             # Print the first 500 characters
             print(chunk["text"][:500])
+
+
+
