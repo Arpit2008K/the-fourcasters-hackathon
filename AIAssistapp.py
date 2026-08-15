@@ -7,7 +7,7 @@ import easyocr
 import io
 
 
-# ---------- TEXT EXTRACTION FUNCTION ----------
+# TEXT EXTRACTION FUNCTION
 
 def extract_text(uploaded_file):
 
@@ -37,7 +37,7 @@ def extract_text(uploaded_file):
     return ""
 
 
-# ---------- STREAMLIT UI ----------
+# STREAMLIT UI 
 st.set_page_config(
     page_title="AI Research Assistant", 
     page_icon="📚", 
