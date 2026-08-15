@@ -390,7 +390,7 @@ def process_file(file_path):       # Function to process a file according to its
 
 
 # Temporary File Path
-file_path = "C:\\Users\\yadao\\Downloads\\29_vedant.docx"  # Temporary File Path
+file_path ="C:\\Users\\Arpit Abhay Kulkarni\\Downloads\\cbse_cl10_ead_english_llr_2026_edition_pre-board_paper_15.pdf" # Temporary File Path
 
 
 # Process the file automatically according to its format
@@ -483,7 +483,7 @@ def retrieve_chunks(question, processed_chunks, top_k=5):
 if __name__ == "__main__":
 
     # Temporary test file path
-    file_path = "C:\\Users\\yadao\\Downloads\\29_vedant.docx"
+    file_path = "C:\\Users\\Arpit Abhay Kulkarni\\Downloads\\cbse_cl10_ead_english_llr_2026_edition_pre-board_paper_15.pdf"
 
     # Process the file
     processed_chunks = process_file(file_path)
