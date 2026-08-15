@@ -35,3 +35,20 @@ def extract_text_from_the_pdf(pdf_path):
 
     # Return the extracted text
     return pages         
+
+# Temporary testing code to demonstrate the function
+pdf_path = "C:\\Users\\yadao\\Downloads\\FTH-Quaterly-Insight-Sep-2025.pdf"  # Demo path for testing
+
+# Open the PDF
+doc = pymupdf.open(pdf_path)     # Specifying what to open
+
+# Print the number of pages
+print("Number of pages:", doc.page_count)  # Print the number of pages In the PDF
+print("Page size:", doc[0].rect)  # Print the size of the first page
+print("Page size:", doc[1].rect)  # Print the size of the second page
+print("Text of the first page:", doc[0].get_text())  # Print the text of the first page
+print("Width of the first page:", doc[0].rect.width)  # Print the width of the first page
+print("The author of the PDF:", doc.metadata['author'])  # Print the author of the PDF
+
+# Close the PDF
+doc.close()             # Close File After Extraction 
