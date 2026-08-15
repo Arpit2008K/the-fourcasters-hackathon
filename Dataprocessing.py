@@ -76,7 +76,7 @@ def extract_text_from_docx(file_path):                # Function to extract text
         # Clean the extracted text
         text = clean_text(text)                       # Clean the extracted text using the clean_text function
 
-        # Skip the paragraph if no text is available
+        # Skip empty paragraphs
         if not text:
             continue
 
@@ -84,6 +84,41 @@ def extract_text_from_docx(file_path):                # Function to extract text
         paragraphs.append({
             "paragraph": paragraph_number,   # Paragraph Number
             "text": text                     # Text
+        })
+
+    # Return the extracted paragraphs
+    return paragraphs
+
+
+# Function to extract text from a TXT file
+def extract_text_from_txt(file_path):                # Function to extract text from a TXT file
+
+    # Open the TXT file
+    with open(file_path, "r", encoding="utf-8", errors="ignore") as txt_file:   # Open the TXT file and ignore encoding issues
+
+        # Read the text from the TXT file
+        text = txt_file.read()                        # Read all the text from the TXT file
+
+    # Clean the extracted text
+    text = clean_text(text)                           # Clean the extracted text using the clean_text function
+
+    # Create an empty list to store text paragraphs
+    paragraphs = []
+
+    # Loop through every paragraph in the text
+    for paragraph_number, paragraph in enumerate(re.split(r"\n\s*\n+", text), start=1):   # Split the text by blank lines
+
+        # Clean the paragraph text
+        paragraph = clean_text(paragraph)              # Clean the paragraph text
+
+        # Skip the paragraph if no text is available
+        if not paragraph:
+            continue
+
+        # Store the paragraph number and extracted text
+        paragraphs.append({
+            "paragraph": paragraph_number,   # Paragraph Number
+            "text": paragraph                # Paragraph Text
         })
 
     # Return the extracted paragraphs
@@ -150,13 +185,13 @@ def process_pdf(pdf_path):       # Function to process a PDF
             processed_chunks.append({
                 "source": Path(pdf_path).name,   # PDF file name
                 "page": page["page"],             # Page Number
-                "chunk": chunk_number,           # Chunk Number
-                "text": chunk                    # Chunk Text
+                "chunk": chunk_number,            # Chunk Number
+                "text": chunk                     # Chunk Text
             })
 
     # Return all processed chunks
     return processed_chunks
-    #-------------------------------------------------------DOCX PROCESSING ------------------------------------------------------------------#
+
 
 # Function to process the complete DOCX file
 def process_docx(file_path):       # Function to process a DOCX file
@@ -185,10 +220,47 @@ def process_docx(file_path):       # Function to process a DOCX file
 
             # Store the source, paragraph number, chunk number, and text
             processed_chunks.append({
-                "source": Path(file_path).name,      # DOCX file name
-                "paragraph": paragraph["paragraph"], # Paragraph Number
-                "chunk": chunk_number,               # Chunk Number
-                "text": chunk                        # Chunk Text
+                "source": Path(file_path).name,       # DOCX file name
+                "paragraph": paragraph["paragraph"],  # Paragraph Number
+                "chunk": chunk_number,                # Chunk Number
+                "text": chunk                         # Chunk Text
+            })
+
+    # Return all processed chunks
+    return processed_chunks
+
+
+# Function to process the complete TXT file
+def process_txt(file_path):       # Function to process a TXT file
+
+    # Extract text from the TXT file
+    paragraphs = extract_text_from_txt(file_path)
+
+    # Create an empty list to store processed chunks
+    processed_chunks = []
+
+    # Loop through every paragraph
+    for paragraph in paragraphs:
+
+        # Get the cleaned text from the current paragraph
+        cleaned = paragraph["text"]
+
+        # Skip the paragraph if no text is available
+        if not cleaned:
+            continue
+
+        # Create chunks from the cleaned text
+        chunks = create_chunks(cleaned)
+
+        # Loop through every chunk
+        for chunk_number, chunk in enumerate(chunks, start=1):
+
+            # Store the source, paragraph number, chunk number, and text
+            processed_chunks.append({
+                "source": Path(file_path).name,       # TXT file name
+                "paragraph": paragraph["paragraph"],  # Paragraph Number
+                "chunk": chunk_number,                # Chunk Number
+                "text": chunk                         # Chunk Text
             })
 
     # Return all processed chunks
@@ -213,11 +285,17 @@ def process_file(file_path):       # Function to process a file according to its
         # Process the DOCX file
         return process_docx(file_path)   # Send the DOCX file to the DOCX processing function
 
+    # Check if the file is a TXT file
+    elif file_extension == ".txt":
+
+        # Process the TXT file
+        return process_txt(file_path)   # Send the TXT file to the TXT processing function
+
     # If the file format is not supported
     else:
 
         # Display an error message
-        raise ValueError("Unsupported file format. Only PDF and DOCX files are supported.")
+        raise ValueError("Unsupported file format. Only PDF, DOCX, and TXT files are supported.")
 
 
 # Temporary File Path
@@ -240,14 +318,12 @@ if processed_chunks:
 
     print(processed_chunks[0])   # Display the first processed chunk
 
-
     # Print the second processed chunk if available
     if len(processed_chunks) > 1:
 
         print("\nSecond processed chunk:")   # Print the second processed chunk
 
         print(processed_chunks[1])   # Display the second processed chunk
-
 
     # Print the first three processed chunks
     print("\nFirst three processed chunks:")
@@ -263,7 +339,7 @@ if processed_chunks:
 
             print("Page:", item["page"])   # Print the page number
 
-        # Check whether the chunk belongs to a DOCX file
+        # Check whether the chunk belongs to a DOCX or TXT file
         if "paragraph" in item:
 
             print("Paragraph:", item["paragraph"])   # Print the paragraph number
