@@ -442,40 +442,47 @@ if processed_chunks:
 
 # ------------------------------------------------------------- Retrieval Function -------------------------------------------------------------
 
-# Function to retrieve the most relevant chunks
+# Function to retrieve relevant chunks
 def retrieve_chunks(question, processed_chunks, top_k=5):
 
-    # Convert the user's question into lowercase words
+    # Convert the question into individual words
     question_words = set(question.lower().split())
 
-    # Create a list to store chunk scores
+    # Create an empty list to store scored chunks
     scored_chunks = []
 
-    # Check every processed chunk
+    # Loop through every processed chunk
     for chunk in processed_chunks:
 
-        # Convert the chunk text into lowercase words
-        text_words = set(chunk["text"].lower().split())
+        # Get the chunk text
+        text = chunk["text"].lower()
 
-        # Count matching words
-        score = len(question_words.intersection(text_words))
+        # Calculate the score based on matching words
+        score = 0
+
+        for word in question_words:
+
+            if word in text:
+                score += 1
 
         # Store the score and chunk
-        scored_chunks.append((score, chunk))
+        scored_chunks.append({
+            "score": score,
+            "chunk": chunk
+        })
 
-    # Sort from highest score to lowest score
-    scored_chunks.sort(key=lambda x: x[0], reverse=True)
+    # Sort chunks from highest score to lowest score
+    scored_chunks.sort(
+        key=lambda item: item["score"],
+        reverse=True
+    )
 
-    # Create a list for retrieved chunks
-    retrieved_chunks = []
-
-    # Take the top relevant chunks
-    for score, chunk in scored_chunks[:top_k]:
-
-        if score > 0:
-            retrieved_chunks.append(chunk)
-
-    return retrieved_chunks
+    # Return the top relevant chunks
+    return [
+        item["chunk"]
+        for item in scored_chunks[:top_k]
+        if item["score"] > 0
+    ]
 
 
 # ------------------------------------------------------------- Testing -------------------------------------------------------------
@@ -483,7 +490,7 @@ def retrieve_chunks(question, processed_chunks, top_k=5):
 if __name__ == "__main__":
 
     # Temporary test file path
-    file_path = "C:\\Users\\Arpit Abhay Kulkarni\\Downloads\\cbse_cl10_ead_english_llr_2026_edition_pre-board_paper_15.pdf"
+    file_path = "C:\\Users\\Arpit Abhay Kulkarni\\Downloads\\AIML_combine week 12.pdf"
 
     # Process the file
     processed_chunks = process_file(file_path)
