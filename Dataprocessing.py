@@ -4,7 +4,7 @@ import pymupdf
 # Import re for cleaning and processing extracted text
 import re
 
-# Import Path for working with file paths
+# Import Path for working with files and file paths
 from pathlib import Path
 
 # Import python-docx for opening DOCX files and extracting text
@@ -12,6 +12,7 @@ from docx import Document
 
 # Import python-pptx for opening PPTX files and extracting text
 from pptx import Presentation
+
 
 # Function to clean extracted text
 def clean_text(text):
@@ -142,7 +143,6 @@ def extract_text_from_txt(file_path):                # Function to extract text 
 ##-------------------------------------------------------------text processing from ppt-------------------------------------------------------------
 
 
-
 # Function to extract text from a PPTX file
 def extract_text_from_pptx(file_path):       # Function to extract text from a PPTX file
 
@@ -183,6 +183,7 @@ def extract_text_from_pptx(file_path):       # Function to extract text from a P
     # Return the extracted slides
     return slides
 
+
 #-------------------------------------------------------------Chunking Functions-------------------------------------------------------------
 
 
@@ -220,7 +221,6 @@ def create_chunks(text, chunk_size=1000, overlap=200):   # Function to create ch
 #-------------------------------------------------------------Processed Chunks Creation Functions-------------------------------------------------------------
 
 
-
 # Function to create processed chunks from extracted text
 def create_processed_chunks(items, source):       # Function to create processed chunks from extracted text
 
@@ -247,7 +247,7 @@ def create_processed_chunks(items, source):       # Function to create processed
             processed_chunk = {
                 "source": source,        # Source file name
                 "chunk": chunk_number,   # Chunk Number
-                "text": chunk             # Chunk Text
+                "text": chunk            # Chunk Text
             }
 
             # Add the page number if available
@@ -260,6 +260,11 @@ def create_processed_chunks(items, source):       # Function to create processed
 
                 processed_chunk["paragraph"] = item["paragraph"]   # Paragraph Number
 
+            # Add the slide number if available
+            if "slide" in item:
+
+                processed_chunk["slide"] = item["slide"]   # Slide Number
+
             # Add the processed chunk to the list
             processed_chunks.append(processed_chunk)
 
@@ -269,7 +274,6 @@ def create_processed_chunks(items, source):       # Function to create processed
 
 
 #-------------------------------------------------------------File Processing Functions (PDF)-------------------------------------------------------------
-
 
 
 # Function to process the complete PDF
@@ -329,6 +333,7 @@ def process_txt(file_path):       # Function to process a TXT file
 
 #-----------------------------------------------------PPTX Processing Functions
 
+
 # Function to process the complete PPTX file
 def process_pptx(file_path):       # Function to process a PPTX file
 
@@ -343,6 +348,7 @@ def process_pptx(file_path):       # Function to process a PPTX file
 
     # Return all processed chunks
     return processed_chunks
+
 
 #-------------------------------------------------------------File Processing Functions (Automatic) Detection------------------------------------------------------------
 
@@ -381,8 +387,7 @@ def process_file(file_path):       # Function to process a file according to its
     else:
 
         # Display an error message
-        raise ValueError("Unsupported file format. Only PDF, DOCX, TXT , And PPTX files are supported.")
-
+        raise ValueError("Unsupported file format. Only PDF, DOCX, TXT, and PPTX files are supported.")
 
 
 # ------------------------------------------------------------- Retrieval Function -------------------------------------------------------------
@@ -405,8 +410,10 @@ def retrieve_chunks(question, processed_chunks, top_k=5):
         # Calculate the score based on matching words
         score = 0
 
+        # Loop through every question word
         for word in question_words:
 
+            # Check if the question word exists in the chunk
             if word in text:
                 score += 1
 
@@ -435,42 +442,55 @@ def retrieve_chunks(question, processed_chunks, top_k=5):
 if __name__ == "__main__":
 
     # Temporary test file path
-    file_path = "C:\\Users\\Arpit Abhay Kulkarni\\Downloads\\AIML_combine week 12.pdf"
+    file_path = "C:\\Users\\yadao\\Downloads\\30_vedant.pdf"
 
-    # Process the file
+    # Process the file automatically according to its format
     processed_chunks = process_file(file_path)
 
+    # Print the number of processed chunks
     print("Number of processed chunks:", len(processed_chunks))
 
+    # Check if processed chunks are available
     if processed_chunks:
 
+        # Print the first processed chunk
         print("\nFirst processed chunk:")
         print(processed_chunks[0])
 
         # Test retrieval
         test_question = "What is the main topic?"
 
+        # Retrieve relevant chunks
         retrieved_chunks = retrieve_chunks(
             test_question,
             processed_chunks
         )
 
+        # Print retrieved chunks
         print("\nRetrieved chunks:")
 
+        # Loop through every retrieved chunk
         for chunk in retrieved_chunks:
 
             print("\n------------------------")
 
+            # Print the source
             print("Source:", chunk["source"])
 
+            # Print the page number if available
             if "page" in chunk:
                 print("Page:", chunk["page"])
 
+            # Print the paragraph number if available
             if "paragraph" in chunk:
                 print("Paragraph:", chunk["paragraph"])
 
+            # Print the slide number if available
+            if "slide" in chunk:
+                print("Slide:", chunk["slide"])
+
+            # Print the chunk number
             print("Chunk:", chunk["chunk"])
 
+            # Print the first 500 characters
             print(chunk["text"][:500])
-
-        
