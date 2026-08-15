@@ -29,7 +29,8 @@ Multiple file formats — supports PDF, DOCX, TXT, and PPTX.
 Natural-language interaction — users can ask questions normally instead of manually searching documents.
 Reduced hallucination risk — prompts instruct the model not to invent information outside the retrieved context.
 Simple Streamlit interface — provides document upload, processing, summaries, chat, and source viewing in one place.
- Real-World Applications 
+
+#Real-World Applications 
  • Academic research: search and compare research papers and generate summaries. 
  • Corporate knowledge bases: answer questions from internal reports, policies, manuals, and documentation. 
  • Education: allow students to question textbooks, notes, and study material. 
