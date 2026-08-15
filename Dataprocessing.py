@@ -17,4 +17,21 @@ def extract_text_from_the_pdf(pdf_path):
     # Create an empty list to store text from each page
     pages = []
 
-    
+
+    # Loop through every page in the PDF
+    for page_number, page in enumerate(doc, start=1):
+
+        # Extract text from the current page
+        text = page.get_text()
+
+        # Store the page number and extracted text
+        pages.append({
+            "page": page_number,   # Page Number 
+            "text": text      # Text
+        })
+
+    # Close the PDF file
+    doc.close()             # Close File After Extraction 
+
+    # Return the extracted text
+    return pages         
