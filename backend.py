@@ -1,7 +1,7 @@
 # AI Research Assistant Backend
 
 from dotenv import load_dotenv
-from langchain.chat_models import init_chat_model
+from huggingface_hub import InferenceClient
 from Dataprocessing import process_file, retrieve_chunks
 
 load_dotenv()
@@ -10,10 +10,13 @@ load_dotenv()
 # ------------------------------------------------------------- MODEL -------------------------------------------------------------
 
 # Initialize Mistral model
-model = init_chat_model(
-    "mistral-small-latest",
-    model_provider="mistralai"
+
+model = InferenceClient(
+    api_key="your_token_here",
+    provider="auto"
 )
+
+MODEL_NAME = "Qwen/Qwen2.5-7B-Instruct"
 
 
 # ------------------------------------------------------------- PROMPT -------------------------------------------------------------
