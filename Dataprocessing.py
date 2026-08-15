@@ -27,6 +27,11 @@ def clean_text(text):
     return text.strip()                         # Remove leading and trailing spaces from the text
 
 
+
+
+#-------------------------------------------------------------PDF Processing Functions-------------------------------------------------------------
+
+
 # Function to extract text from a PDF file
 def extract_text_from_the_pdf(pdf_path):                # Function to extract text from a PDF file
 
@@ -56,6 +61,9 @@ def extract_text_from_the_pdf(pdf_path):                # Function to extract te
 
     # Return the extracted text
     return pages
+
+
+#-------------------------------------------------------------DOCX Processing Functions-------------------------------------------------------------
 
 
 # Function to extract text from a DOCX file
@@ -88,6 +96,10 @@ def extract_text_from_docx(file_path):                # Function to extract text
 
     # Return the extracted paragraphs
     return paragraphs
+
+
+
+#-------------------------------------------------------------TXT Processing Functions-------------------------------------------------------------
 
 
 # Function to extract text from a TXT file
@@ -125,6 +137,11 @@ def extract_text_from_txt(file_path):                # Function to extract text 
     return paragraphs
 
 
+
+
+#-------------------------------------------------------------Chunking Functions-------------------------------------------------------------
+
+
 # Function to create chunks of text
 def create_chunks(text, chunk_size=1000, overlap=200):   # Function to create chunks of text with specified size and overlap
 
@@ -156,41 +173,78 @@ def create_chunks(text, chunk_size=1000, overlap=200):   # Function to create ch
     return chunks
 
 
+#-------------------------------------------------------------Processed Chunks Creation Functions-------------------------------------------------------------
+
+
+
+# Function to create processed chunks from extracted text
+def create_processed_chunks(items, source):       # Function to create processed chunks from extracted text
+
+    # Create an empty list to store processed chunks
+    processed_chunks = []
+
+    # Loop through every extracted item
+    for item in items:
+
+        # Get the extracted text from the current item
+        text = item["text"]
+
+        # Skip the item if no text is available
+        if not text:
+            continue
+
+        # Create chunks from the extracted text
+        chunks = create_chunks(text)
+
+        # Loop through every chunk
+        for chunk_number, chunk in enumerate(chunks, start=1):
+
+            # Store the source, chunk number, and text
+            processed_chunk = {
+                "source": source,        # Source file name
+                "chunk": chunk_number,   # Chunk Number
+                "text": chunk             # Chunk Text
+            }
+
+            # Add the page number if available
+            if "page" in item:
+
+                processed_chunk["page"] = item["page"]   # Page Number
+
+            # Add the paragraph number if available
+            if "paragraph" in item:
+
+                processed_chunk["paragraph"] = item["paragraph"]   # Paragraph Number
+
+            # Add the processed chunk to the list
+            processed_chunks.append(processed_chunk)
+
+    # Return all processed chunks
+    return processed_chunks
+
+
+
+#-------------------------------------------------------------File Processing Functions (PDF)-------------------------------------------------------------
+
+
+
 # Function to process the complete PDF
 def process_pdf(pdf_path):       # Function to process a PDF
 
     # Extract text from the PDF
     pages = extract_text_from_the_pdf(pdf_path)
 
-    # Create an empty list to store processed chunks
-    processed_chunks = []
+    # Get the PDF file name
+    source = Path(pdf_path).name
 
-    # Loop through every page
-    for page in pages:
-
-        # Get the cleaned text from the current page
-        cleaned = page["text"]
-
-        # Skip the page if no text is available
-        if not cleaned:
-            continue
-
-        # Create chunks from the cleaned text
-        chunks = create_chunks(cleaned)
-
-        # Loop through every chunk
-        for chunk_number, chunk in enumerate(chunks, start=1):
-
-            # Store the source, page number, chunk number, and text
-            processed_chunks.append({
-                "source": Path(pdf_path).name,   # PDF file name
-                "page": page["page"],             # Page Number
-                "chunk": chunk_number,            # Chunk Number
-                "text": chunk                     # Chunk Text
-            })
+    # Create processed chunks from the extracted pages
+    processed_chunks = create_processed_chunks(pages, source)
 
     # Return all processed chunks
     return processed_chunks
+
+
+#-------------------------------------------------------------DOCX Processing Functions-------------------------------------------------------------
 
 
 # Function to process the complete DOCX file
@@ -199,35 +253,18 @@ def process_docx(file_path):       # Function to process a DOCX file
     # Extract text from the DOCX file
     paragraphs = extract_text_from_docx(file_path)
 
-    # Create an empty list to store processed chunks
-    processed_chunks = []
+    # Get the DOCX file name
+    source = Path(file_path).name
 
-    # Loop through every paragraph
-    for paragraph in paragraphs:
-
-        # Get the cleaned text from the current paragraph
-        cleaned = paragraph["text"]
-
-        # Skip the paragraph if no text is available
-        if not cleaned:
-            continue
-
-        # Create chunks from the cleaned text
-        chunks = create_chunks(cleaned)
-
-        # Loop through every chunk
-        for chunk_number, chunk in enumerate(chunks, start=1):
-
-            # Store the source, paragraph number, chunk number, and text
-            processed_chunks.append({
-                "source": Path(file_path).name,       # DOCX file name
-                "paragraph": paragraph["paragraph"],  # Paragraph Number
-                "chunk": chunk_number,                # Chunk Number
-                "text": chunk                         # Chunk Text
-            })
+    # Create processed chunks from the extracted paragraphs
+    processed_chunks = create_processed_chunks(paragraphs, source)
 
     # Return all processed chunks
     return processed_chunks
+
+
+
+#-------------------------------------------------------------TXT Processing Functions-------------------------------------------------------------
 
 
 # Function to process the complete TXT file
@@ -236,35 +273,18 @@ def process_txt(file_path):       # Function to process a TXT file
     # Extract text from the TXT file
     paragraphs = extract_text_from_txt(file_path)
 
-    # Create an empty list to store processed chunks
-    processed_chunks = []
+    # Get the TXT file name
+    source = Path(file_path).name
 
-    # Loop through every paragraph
-    for paragraph in paragraphs:
-
-        # Get the cleaned text from the current paragraph
-        cleaned = paragraph["text"]
-
-        # Skip the paragraph if no text is available
-        if not cleaned:
-            continue
-
-        # Create chunks from the cleaned text
-        chunks = create_chunks(cleaned)
-
-        # Loop through every chunk
-        for chunk_number, chunk in enumerate(chunks, start=1):
-
-            # Store the source, paragraph number, chunk number, and text
-            processed_chunks.append({
-                "source": Path(file_path).name,       # TXT file name
-                "paragraph": paragraph["paragraph"],  # Paragraph Number
-                "chunk": chunk_number,                # Chunk Number
-                "text": chunk                         # Chunk Text
-            })
+    # Create processed chunks from the extracted paragraphs
+    processed_chunks = create_processed_chunks(paragraphs, source)
 
     # Return all processed chunks
     return processed_chunks
+
+
+
+#-------------------------------------------------------------File Processing Functions (Automatic) Detection------------------------------------------------------------
 
 
 # Function to process different file formats
@@ -296,6 +316,11 @@ def process_file(file_path):       # Function to process a file according to its
 
         # Display an error message
         raise ValueError("Unsupported file format. Only PDF, DOCX, and TXT files are supported.")
+
+
+
+#-------------------------------------------------------------Example Usage-------------------------------------------------------------
+
 
 
 # Temporary File Path
@@ -347,3 +372,6 @@ if processed_chunks:
         print("Chunk:", item["chunk"])   # Print the chunk number
 
         print(item["text"][:500])   # Print the first 500 characters of the chunk
+
+
+        
