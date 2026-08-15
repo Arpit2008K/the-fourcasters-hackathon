@@ -299,7 +299,7 @@ def process_file(file_path):       # Function to process a file according to its
 
 
 # Temporary File Path
-file_path = "C:\\Users\\yadao\\Downloads\\FTH-Quaterly-Insight-Sep-2025.pdf"   # Temporary File Path
+file_path = "C:\\Users\\yadao\\Downloads\\29_vedant.docx"   # Temporary File Path
 
 
 # Process the file automatically according to its format
