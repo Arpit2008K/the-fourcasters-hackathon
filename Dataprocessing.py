@@ -7,6 +7,9 @@ import re
 # Import Path for working with file paths
 from pathlib import Path
 
+# Import python-docx for opening DOCX files and extracting text
+from docx import Document
+
 
 # Function to clean extracted text
 def clean_text(text):
@@ -55,25 +58,66 @@ def extract_text_from_the_pdf(pdf_path):                # Function to extract te
     return pages
 
 
+# Function to extract text from a DOCX file
+def extract_text_from_docx(file_path):                # Function to extract text from a DOCX file
+
+    # Open the DOCX file
+    doc = Document(file_path)                         # Open the DOCX file using python-docx
+
+    # Create an empty list to store text from each paragraph
+    paragraphs = []
+
+    # Loop through every paragraph in the DOCX file
+    for paragraph_number, paragraph in enumerate(doc.paragraphs, start=1):   # Enumerate through each paragraph starting from paragraph 1
+
+        # Extract text from the current paragraph
+        text = paragraph.text                         # Extract text from the current paragraph
+
+        # Clean the extracted text
+        text = clean_text(text)                       # Clean the extracted text using the clean_text function
+
+        # Skip the paragraph if no text is available
+        if not text:
+            continue
+
+        # Store the paragraph number and extracted text
+        paragraphs.append({
+            "paragraph": paragraph_number,   # Paragraph Number
+            "text": text                     # Text
+        })
+
+    # Return the extracted paragraphs
+    return paragraphs
+
+
 # Function to create chunks of text
 def create_chunks(text, chunk_size=1000, overlap=200):   # Function to create chunks of text with specified size and overlap
 
-    words = text.split()   # Split the text into individual words
+    # Split the text into individual words
+    words = text.split()   # Split the text into a list of individual words
 
+    # Create an empty list to store the chunks of text
     chunks = []             # Empty list to store the chunks of text
 
+    # Initialize the starting index for chunking
     start = 0               # Initialize the starting index for chunking
 
+    # Loop until all words are processed
     while start < len(words):   # Loop until all words are processed
 
+        # Calculate the ending index for the current chunk
         end = start + chunk_size   # Calculate the ending index for the current chunk
 
-        chunk = " ".join(words[start:end])   # Join the words from the starting index to the ending index to form a chunk of text
+        # Join the words from the starting index to the ending index
+        chunk = " ".join(words[start:end])   # Join the selected words to form a chunk of text
 
+        # Add the current chunk to the list of chunks
         chunks.append(chunk)   # Add the current chunk to the list of chunks
 
-        start += chunk_size - overlap   # Move the starting index forward by the chunk size minus the overlap to maintain context
+        # Move the starting index forward while maintaining overlap
+        start += chunk_size - overlap   # Move forward by the chunk size minus the overlap to maintain context
 
+    # Return the created chunks
     return chunks
 
 
@@ -107,53 +151,123 @@ def process_pdf(pdf_path):       # Function to process a PDF
                 "source": Path(pdf_path).name,   # PDF file name
                 "page": page["page"],             # Page Number
                 "chunk": chunk_number,           # Chunk Number
-                "text": chunk                     # Chunk Text
+                "text": chunk                    # Chunk Text
             })
 
     # Return all processed chunks
     return processed_chunks
 
 
+# Function to process the complete DOCX file
+def process_docx(file_path):       # Function to process a DOCX file
+
+    # Extract text from the DOCX file
+    paragraphs = extract_text_from_docx(file_path)
+
+    # Create an empty list to store processed chunks
+    processed_chunks = []
+
+    # Loop through every paragraph
+    for paragraph in paragraphs:
+
+        # Get the cleaned text from the current paragraph
+        cleaned = paragraph["text"]
+
+        # Skip the paragraph if no text is available
+        if not cleaned:
+            continue
+
+        # Create chunks from the cleaned text
+        chunks = create_chunks(cleaned)
+
+        # Loop through every chunk
+        for chunk_number, chunk in enumerate(chunks, start=1):
+
+            # Store the source, paragraph number, chunk number, and text
+            processed_chunks.append({
+                "source": Path(file_path).name,      # DOCX file name
+                "paragraph": paragraph["paragraph"], # Paragraph Number
+                "chunk": chunk_number,               # Chunk Number
+                "text": chunk                        # Chunk Text
+            })
+
+    # Return all processed chunks
+    return processed_chunks
+
+
+# Function to process different file formats
+def process_file(file_path):       # Function to process a file according to its format
+
+    # Get the file extension
+    file_extension = Path(file_path).suffix.lower()   # Get the file extension and convert it to lowercase
+
+    # Check if the file is a PDF
+    if file_extension == ".pdf":
+
+        # Process the PDF file
+        return process_pdf(file_path)   # Send the PDF file to the PDF processing function
+
+    # Check if the file is a DOCX file
+    elif file_extension == ".docx":
+
+        # Process the DOCX file
+        return process_docx(file_path)   # Send the DOCX file to the DOCX processing function
+
+    # If the file format is not supported
+    else:
+
+        # Display an error message
+        raise ValueError("Unsupported file format. Only PDF and DOCX files are supported.")
+
+
 # Temporary File Path
-pdf_path = "C:\\Users\\yadao\\Downloads\\FTH-Quaterly-Insight-Sep-2025.pdf"   # Temporary File Path
+file_path = "C:\\Users\\yadao\\Downloads\\FTH-Quaterly-Insight-Sep-2025.pdf"   # Temporary File Path
 
 
-# Process the complete PDF
-processed_chunks = process_pdf(pdf_path)   # Process the PDF using the complete processing pipeline
+# Process the file automatically according to its format
+processed_chunks = process_file(file_path)   # Automatically select the correct processing function
 
 
 # Print the number of processed chunks
 print("Number of processed chunks:", len(processed_chunks))   # This prints the number of processed chunks
 
 
-# Print the first processed chunk
-print("\nFirst processed chunk:")   # Print the first processed chunk
+# Check if processed chunks are available
+if processed_chunks:
 
-print(processed_chunks[0])   # Display the first processed chunk
+    # Print the first processed chunk
+    print("\nFirst processed chunk:")   # Print the first processed chunk
 
-
-# Print the second processed chunk
-print("\nSecond processed chunk:")   # Print the second processed chunk
-
-print(processed_chunks[1])   # Display the second processed chunk
-
-# Test the PDF processing function temporarily with a specific PDF file path
-
-pdf_file = "C:\\Users\\yadao\\Downloads\\FTH-Quaterly-Insight-Sep-2025.pdf"      
-
-chunks = process_pdf(pdf_file)        # Process the PDF file and create chunks of text
-
-print("Total chunks:", len(chunks))   # Print the total number of chunks created from the PDF
-
-for item in chunks[:3]:
-    print("\n------------------------")      
-    print("Source:", item["source"])             # Print the source of the chunk
-    print("Page:", item["page"])                # Print the page number
-    print("Chunk:", item["chunk"])              # Print the chunk number
-    print(item["text"][:500])                   # Print the first 500 characters of the chunk
+    print(processed_chunks[0])   # Display the first processed chunk
 
 
+    # Print the second processed chunk if available
+    if len(processed_chunks) > 1:
 
-    #-------------------------------------------------------PDF PROCESSING OVER ------------------------------------------------------------------#
+        print("\nSecond processed chunk:")   # Print the second processed chunk
 
-    
+        print(processed_chunks[1])   # Display the second processed chunk
+
+
+    # Print the first three processed chunks
+    print("\nFirst three processed chunks:")
+
+    for item in processed_chunks[:3]:
+
+        print("\n------------------------")
+
+        print("Source:", item["source"])   # Print the source of the chunk
+
+        # Check whether the chunk belongs to a PDF
+        if "page" in item:
+
+            print("Page:", item["page"])   # Print the page number
+
+        # Check whether the chunk belongs to a DOCX file
+        if "paragraph" in item:
+
+            print("Paragraph:", item["paragraph"])   # Print the paragraph number
+
+        print("Chunk:", item["chunk"])   # Print the chunk number
+
+        print(item["text"][:500])   # Print the first 500 characters of the chunk
