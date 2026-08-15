@@ -1,6 +1,8 @@
 from dotenv import load_dotenv
+from langchain.chat_models import init_chat_model
 load_dotenv()
 
+model=init_chat_model("mistral-small-latest",model_provider="mistralai")
 def build_prompt(question, retrieved_chunks):
     context=""
     for chunk in retrieved_chunks:
@@ -16,6 +18,12 @@ def build_prompt(question, retrieved_chunks):
     prompt=prompt+context
     prompt=prompt+"\nUser Question: "+question
     return prompt
+
+def get_answer(question,retrieved_chunks):
+    prompt = build_prompt(question, retrieved_chunks)
+    response=model.invoke(prompt)
+    return response.content
+
 test_chunks = [
     {
         "text": "The CNN model achieved an accuracy of 94%.",
@@ -24,8 +32,8 @@ test_chunks = [
     }
 ]
 
-test_question = "Which model performed best?"
+test_question = "What accuracy did the CNN model achieve?"
 
-test_prompt = build_prompt(test_question, test_chunks)
+test_answer = get_answer(test_question, test_chunks)
 
-print(test_prompt)
+print(test_answer)
