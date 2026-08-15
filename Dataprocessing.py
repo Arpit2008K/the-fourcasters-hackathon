@@ -385,61 +385,6 @@ def process_file(file_path):       # Function to process a file according to its
 
 
 
-#-------------------------------------------------------------Example Usage-------------------------------------------------------------
-
-
-
-# Temporary File Path
-file_path ="C:\\Users\\Arpit Abhay Kulkarni\\Downloads\\cbse_cl10_ead_english_llr_2026_edition_pre-board_paper_15.pdf" # Temporary File Path
-
-
-# Process the file automatically according to its format
-processed_chunks = process_file(file_path)   # Automatically select the correct processing function
-
-
-# Print the number of processed chunks
-print("Number of processed chunks:", len(processed_chunks))   # This prints the number of processed chunks
-
-
-# Check if processed chunks are available
-if processed_chunks:
-
-    # Print the first processed chunk
-    print("\nFirst processed chunk:")   # Print the first processed chunk
-
-    print(processed_chunks[0])   # Display the first processed chunk
-
-    # Print the second processed chunk if available
-    if len(processed_chunks) > 1:
-
-        print("\nSecond processed chunk:")   # Print the second processed chunk
-
-        print(processed_chunks[1])   # Display the second processed chunk
-
-    # Print the first three processed chunks
-    print("\nFirst three processed chunks:")
-
-    for item in processed_chunks[:3]:
-
-        print("\n------------------------")
-
-        print("Source:", item["source"])   # Print the source of the chunk
-
-        # Check whether the chunk belongs to a PDF
-        if "page" in item:
-
-            print("Page:", item["page"])   # Print the page number
-
-        # Check whether the chunk belongs to a DOCX or TXT file
-        if "paragraph" in item:
-
-            print("Paragraph:", item["paragraph"])   # Print the paragraph number
-
-        print("Chunk:", item["chunk"])   # Print the chunk number
-
-        print(item["text"][:500])   # Print the first 500 characters of the chunk
-
-
 # ------------------------------------------------------------- Retrieval Function -------------------------------------------------------------
 
 # Function to retrieve relevant chunks
