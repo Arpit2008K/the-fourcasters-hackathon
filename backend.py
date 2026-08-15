@@ -96,29 +96,37 @@ def answer_question(question, file_paths):
 
     try:
 
-        # Create an empty list for all processed chunks
         all_processed_chunks = []
 
-        # Process every uploaded research file
         for file_path in file_paths:
 
             processed_chunks = process_file(file_path)
 
             all_processed_chunks.extend(processed_chunks)
 
-        # Retrieve relevant chunks from all documents
+        if not all_processed_chunks:
+
+            return (
+                "I could not extract any text from the uploaded document. "
+                "Please upload a text-based PDF, DOCX, TXT, or PPTX file."
+            )
+
         retrieved_chunks = retrieve_chunks(
             question,
             all_processed_chunks
         )
 
-        # Generate answer using Mistral
-        answer = get_answer(
+        if not retrieved_chunks:
+
+            return (
+                "I could not find relevant information in the uploaded "
+                "documents to answer this question."
+            )
+
+        return get_answer(
             question,
             retrieved_chunks
         )
-
-        return answer
 
     except Exception as e:
 
@@ -126,23 +134,3 @@ def answer_question(question, file_paths):
             "Sorry, I was unable to process the research files. "
             "Please check the uploaded files and try again."
         )
-
-
-# ------------------------------------------------------------- TESTING -------------------------------------------------------------
-
-if __name__ == "__main__":
-
-    # Temporary test files
-    test_files = [
-        r"C:\Users\Arpit Abhay Kulkarni\Downloads\Untitled Document.pdf",
-        r"C:\Users\Arpit Abhay Kulkarni\Downloads\cbse_cl10_ead_english_llr_2026_edition_pre-board_paper_15.pdf"
-    ]
-
-    test_question = "What are the differences between the two research papers?"
-
-    test_answer = answer_question(
-        test_question,
-        test_files
-    )
-
-    print(test_answer)
