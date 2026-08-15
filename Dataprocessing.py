@@ -440,4 +440,28 @@ if processed_chunks:
         print(item["text"][:500])   # Print the first 500 characters of the chunk
 
 
+def retrieve_chunks(question, processed_chunks, top_k=5):
+
+    question_words = set(question.lower().split())
+
+    scored_chunks = []
+
+    for chunk in processed_chunks:
+
+        text_words = set(chunk["text"].lower().split())
+
+        score = len(question_words.intersection(text_words))
+
+        scored_chunks.append((score, chunk))
+
+    scored_chunks.sort(key=lambda x: x[0], reverse=True)
+
+    retrieved_chunks = []
+
+    for score, chunk in scored_chunks[:top_k]:
+
+        if score > 0:
+            retrieved_chunks.append(chunk)
+
+    return retrieved_chunks
         
