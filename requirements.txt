@@ -1,0 +1,12 @@
+streamlit           # For building the web application interface
+PyMuPDF             # For extracting text from PDF files
+python-docx         # For extracting text from Word documents
+python-pptx         # For extracting text from PowerPoint presentations
+pandas              # For data manipulation and analysis
+openpyxl            # For working with Excel files
+easyocr             # For optical character recognition
+Pillow              # For image processing  
+python-dotenv       # For loading environment variables from a .env file
+langchain           # For building language model applications
+langchain-mistralai # For integrating with Mistral AI models
+langchain-text-splitters # For splitting text into smaller chunks

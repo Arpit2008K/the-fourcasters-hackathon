@@ -387,37 +387,30 @@ def process_file(file_path):       # Function to process a file according to its
 
 # ------------------------------------------------------------- Retrieval Function -------------------------------------------------------------
 
+# Function to retrieve relevant chunks
 def retrieve_chunks(question, processed_chunks, top_k=5):
 
-    # Convert the question into lowercase words
+    # Convert the question into individual words
     question_words = set(question.lower().split())
 
-    # Remove common words that are not useful for retrieval
-    stop_words = {
-        "what", "was", "were", "is", "are",
-        "the", "a", "an", "in", "on", "of",
-        "to", "for", "and", "or", "during",
-        "this", "that", "about"
-    }
-
-    # Keep only useful words
-    question_words = question_words - stop_words
-
+    # Create an empty list to store scored chunks
     scored_chunks = []
 
-    # Compare the question with every processed chunk
+    # Loop through every processed chunk
     for chunk in processed_chunks:
 
+        # Get the chunk text
         text = chunk["text"].lower()
 
+        # Calculate the score based on matching words
         score = 0
 
-        # Count matching words
         for word in question_words:
 
             if word in text:
                 score += 1
 
+        # Store the score and chunk
         scored_chunks.append({
             "score": score,
             "chunk": chunk
@@ -430,15 +423,12 @@ def retrieve_chunks(question, processed_chunks, top_k=5):
     )
 
     # Return the top relevant chunks
-    retrieved_chunks = []
+    return [
+        item["chunk"]
+        for item in scored_chunks[:top_k]
+        if item["score"] > 0
+    ]
 
-    for item in scored_chunks[:top_k]:
-
-        if item["score"] > 0:
-
-            retrieved_chunks.append(item["chunk"])
-
-    return retrieved_chunks
 
 # ------------------------------------------------------------- Testing -------------------------------------------------------------
 
