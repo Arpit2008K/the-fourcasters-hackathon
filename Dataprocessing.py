@@ -390,7 +390,7 @@ def process_file(file_path):       # Function to process a file according to its
 
 
 # Temporary File Path
-file_path = "---------"  # Temporary File Path
+file_path = "C:\\Users\\yadao\\Downloads\\29_vedant.docx"  # Temporary File Path
 
 
 # Process the file automatically according to its format
@@ -440,28 +440,95 @@ if processed_chunks:
         print(item["text"][:500])   # Print the first 500 characters of the chunk
 
 
+# ------------------------------------------------------------- Retrieval Function -------------------------------------------------------------
+
+# Function to retrieve the most relevant chunks
 def retrieve_chunks(question, processed_chunks, top_k=5):
 
+    # Convert the user's question into lowercase words
     question_words = set(question.lower().split())
 
+    # Create a list to store chunk scores
     scored_chunks = []
 
+    # Check every processed chunk
     for chunk in processed_chunks:
 
+        # Convert the chunk text into lowercase words
         text_words = set(chunk["text"].lower().split())
 
+        # Count how many words from the question appear in the chunk
         score = len(question_words.intersection(text_words))
 
+        # Store the score and the chunk
         scored_chunks.append((score, chunk))
 
+    # Sort chunks from highest score to lowest score
     scored_chunks.sort(key=lambda x: x[0], reverse=True)
 
+    # Create a list for the relevant chunks
     retrieved_chunks = []
 
+    # Take only the top relevant chunks
     for score, chunk in scored_chunks[:top_k]:
 
+        # Only include chunks that have at least one matching word
         if score > 0:
             retrieved_chunks.append(chunk)
 
+    # Return the relevant chunks
     return retrieved_chunks
+
+
+# ------------------------------------------------------------- Example / Testing -------------------------------------------------------------
+
+if __name__ == "__main__":
+
+    # Temporary file path for testing
+    file_path = "C:\\Users\\yadao\\Downloads\\29_vedant.docx"
+
+    # Process the file
+    processed_chunks = process_file(file_path)
+
+    # Print the number of processed chunks
+    print("Number of processed chunks:", len(processed_chunks))
+
+    # Check if processed chunks are available
+    if processed_chunks:
+
+        # Print the first processed chunk
+        print("\nFirst processed chunk:")
+        print(processed_chunks[0])
+
+        # Print the second processed chunk if available
+        if len(processed_chunks) > 1:
+
+            print("\nSecond processed chunk:")
+            print(processed_chunks[1])
+
+        # Test retrieval
+        test_question = "What is the main topic?"
+
+        retrieved_chunks = retrieve_chunks(
+            test_question,
+            processed_chunks
+        )
+
+        print("\nRetrieved chunks:")
+
+        for chunk in retrieved_chunks:
+
+            print("\n------------------------")
+
+            print("Source:", chunk["source"])
+
+            if "page" in chunk:
+                print("Page:", chunk["page"])
+
+            if "paragraph" in chunk:
+                print("Paragraph:", chunk["paragraph"])
+
+            print("Chunk:", chunk["chunk"])
+
+            print(chunk["text"][:500])
         
