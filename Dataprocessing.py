@@ -10,6 +10,8 @@ from pathlib import Path
 # Import python-docx for opening DOCX files and extracting text
 from docx import Document
 
+# Import python-pptx for opening PPTX files and extracting text
+from pptx import Presentation
 
 # Function to clean extracted text
 def clean_text(text):
@@ -137,7 +139,49 @@ def extract_text_from_txt(file_path):                # Function to extract text 
     return paragraphs
 
 
+##-------------------------------------------------------------text processing from ppt-------------------------------------------------------------
 
+
+
+# Function to extract text from a PPTX file
+def extract_text_from_pptx(file_path):       # Function to extract text from a PPTX file
+
+    # Open the PPTX file
+    presentation = Presentation(file_path)   # Open the PPTX file using python-pptx
+
+    # Create an empty list to store text from each slide
+    slides = []
+
+    # Loop through every slide in the presentation
+    for slide_number, slide in enumerate(presentation.slides, start=1):
+
+        # Create an empty string to store slide text
+        slide_text = ""
+
+        # Loop through every shape on the slide
+        for shape in slide.shapes:
+
+            # Check if the shape contains text
+            if hasattr(shape, "text"):
+
+                # Add the shape text to the slide text
+                slide_text += shape.text + "\n"
+
+        # Clean the extracted text
+        slide_text = clean_text(slide_text)   # Clean the extracted slide text
+
+        # Skip the slide if no text is available
+        if not slide_text:
+            continue
+
+        # Store the slide number and extracted text
+        slides.append({
+            "slide": slide_number,   # Slide Number
+            "text": slide_text       # Slide Text
+        })
+
+    # Return the extracted slides
+    return slides
 
 #-------------------------------------------------------------Chunking Functions-------------------------------------------------------------
 
@@ -283,6 +327,22 @@ def process_txt(file_path):       # Function to process a TXT file
     return processed_chunks
 
 
+#-----------------------------------------------------PPTX Processing Functions
+
+# Function to process the complete PPTX file
+def process_pptx(file_path):       # Function to process a PPTX file
+
+    # Extract text from the PPTX file
+    slides = extract_text_from_pptx(file_path)
+
+    # Get the PPTX file name
+    source = Path(file_path).name
+
+    # Create processed chunks from the extracted slides
+    processed_chunks = create_processed_chunks(slides, source)
+
+    # Return all processed chunks
+    return processed_chunks
 
 #-------------------------------------------------------------File Processing Functions (Automatic) Detection------------------------------------------------------------
 
@@ -311,11 +371,17 @@ def process_file(file_path):       # Function to process a file according to its
         # Process the TXT file
         return process_txt(file_path)   # Send the TXT file to the TXT processing function
 
+    # Check if the file is a PPTX file
+    elif file_extension == ".pptx":
+
+        # Process the PPTX file
+        return process_pptx(file_path)   # Send the PPTX file to the PPTX processing function
+
     # If the file format is not supported
     else:
 
         # Display an error message
-        raise ValueError("Unsupported file format. Only PDF, DOCX, and TXT files are supported.")
+        raise ValueError("Unsupported file format. Only PDF, DOCX, TXT , And PPTX files are supported.")
 
 
 
@@ -324,7 +390,7 @@ def process_file(file_path):       # Function to process a file according to its
 
 
 # Temporary File Path
-file_path = "C:\\Users\\yadao\\Downloads\\29_vedant.docx"   # Temporary File Path
+file_path = "---------"  # Temporary File Path
 
 
 # Process the file automatically according to its format
