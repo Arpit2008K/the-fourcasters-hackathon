@@ -17,3 +17,5 @@ The Fourcasters is an AI-powered research assistant that allows users to upload 
 The system processes the uploaded documents, retrieves relevant information, and uses an LLM to generate answers grounded in the provided research context.
 
 When multiple research documents are uploaded, the system can compare relevant information and present the comparison in a structured table while providing source and page references where available.
+
+ Real-World Applications • Academic research: search and compare research papers and generate summaries. • Corporate knowledge bases: answer questions from internal reports, policies, manuals, and documentation. • Education: allow students to question textbooks, notes, and study material. • Technical documentation: help engineers locate procedures and specifications. • Research and development: compare methods, datasets, findings, and conclusions. • Legal document review: locate relevant clauses across large document sets, subject to professional validation.
