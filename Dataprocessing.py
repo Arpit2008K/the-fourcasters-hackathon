@@ -156,7 +156,7 @@ def process_pdf(pdf_path):       # Function to process a PDF
 
     # Return all processed chunks
     return processed_chunks
-
+    #-------------------------------------------------------DOCX PROCESSING ------------------------------------------------------------------#
 
 # Function to process the complete DOCX file
 def process_docx(file_path):       # Function to process a DOCX file
